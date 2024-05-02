@@ -7,14 +7,25 @@ router.get("/test", (req, res) => {
     res.send("this is the ticket test route");
 });
 
-//TODO
 router.get("/all", (req, res) => {
-    db.any()
+    try {
+        const data = await db.select().table('tickets');
+        res.send(data).status(200);
+    } catch (err) {
+        res.json({ err }).status(500);
+    }
 });
 
-//TODO
-//should also return all the replies associated to the ticket
-router.get("/:id");
+router.get("/:id", (req, res) => {
+    const id = req.params.id;
+    try {
+        const ticket = await db('tickets').where({ id });
+        const replies = await db('replies').where({ ticket_id: id });
+        res.send({ ticket, replies }).status(200);
+    } catch (err) {
+        res.json({ err }).status(500);
+    }
+});
 
 router.post("/", (req, res) => {
     const id = uuidv4();
@@ -40,7 +51,7 @@ router.patch("/", (req, res) => {
     const { ticketID, email, title, description, status, updatedBy, updated } = req.body;
 
     try {
-        db('tickets').where({ id: ticketID }).update({
+        await db('tickets').where({ id: ticketID }).update({
             updated,
             updated_by: updatedBy,
             ...email ? { email } : {},
