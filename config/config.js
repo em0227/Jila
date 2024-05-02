@@ -1,5 +1,5 @@
 require("dotenv").config();
-// console.log('env', process.env)
+
 const db = require('knex')({
   client: 'pg',
   version: '7.2',
@@ -12,7 +12,7 @@ const db = require('knex')({
     password: process.env.DB_PASSWORD,
   },
   searchPath: ['knex', 'public'],
-  debug: true
+  debug: false
 });
 
 module.exports = db;
