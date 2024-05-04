@@ -6,9 +6,9 @@ import React, { useState } from "react";
 
 import "@mantine/core/styles.css";
 import { MantineProvider } from "@mantine/core";
-import { Button } from "@mantine/core";
-import { Select } from "@mantine/core";
+import { Button, Select } from "@mantine/core";
 
+//TODO write test only admin can see ticket list
 export default function RootLayout({ children }) {
   const [role, setRole] = useState("User");
   return (

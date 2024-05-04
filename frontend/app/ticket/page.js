@@ -7,12 +7,8 @@ import { useDisclosure } from "@mantine/hooks";
 
 import { createTicket } from "../../utils/tickets";
 
-//TODO create utils to fire requsets
-//TODO admin should be able to update ticket in id page
-//TODO admin can add replies
 //TODO write test for create ticket & validation
-//TODO write test only admin can see ticket list
-const Ticket = () => {
+const UserTicket = () => {
   const [success, setSuccess] = useState(null);
   const [messageOpened, isMessageOpenedProps] = useDisclosure(false);
   const form = useForm({
@@ -31,7 +27,7 @@ const Ticket = () => {
 
   return (
     <div className="mt-5">
-      <h1 className="text-lg font-bold">Ticket Page</h1>
+      <h1 className="text-lg font-bold">Create a Ticket</h1>
       {success ? (
         <Modal
           opened={messageOpened}
@@ -109,4 +105,4 @@ const Ticket = () => {
   );
 };
 
-export default Ticket;
+export default UserTicket;

@@ -10,10 +10,10 @@ router.get("/test", (req, res) => {
 router.get("/all", async (req, res, next) => {
   try {
     const data = await db.select().from("tickets");
-    res.send(data).status(200);
+    res.send({ success: true, data }).status(200);
   } catch (err) {
     console.log(err);
-    res.status(500).send("Something broke!");
+    res.status(500).send({ success: false });
   }
 });
 
@@ -22,10 +22,10 @@ router.get("/:id", async (req, res) => {
   try {
     const ticket = await db("tickets").where({ id });
     const replies = await db("replies").where({ ticket_id: id });
-    res.send({ ticket, replies }).status(200);
+    res.send({ ticket, replies, success: true }).status(200);
   } catch (err) {
     console.log(err);
-    res.status(500).send("Something broke!");
+    res.status(500).send({ success: false });
   }
 });
 
@@ -54,23 +54,19 @@ router.post("/", async (req, res) => {
 
 //TODO: should the ticket be updated if an reply was added but nothing changed on the ticket?
 router.patch("/", async (req, res) => {
-  const { ticketID, email, title, description, status, updatedBy, updated } =
-    req.body;
+  const { ticketId, status, updatedBy, updated } = req.body;
 
   try {
-    await db("tickets")
-      .where({ id: ticketID })
-      .update({
-        updated,
-        updated_by: updatedBy,
-        ...(email ? { email } : {}),
-        ...(title ? { title } : {}),
-        ...(description ? { description } : {}),
-        ...(status ? { status } : {}),
-      });
+    await db("tickets").where({ id: ticketId }).update({
+      updated,
+      updated_by: updatedBy,
+      status,
+    });
+
+    res.status(200).send({ success: true });
   } catch (err) {
     console.log(err);
-    res.status(500).send("Something broke!");
+    res.status(500).send({ success: false });
   }
 });
 
