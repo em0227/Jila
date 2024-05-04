@@ -1,8 +1,11 @@
 "use client";
 
-import React from "react";
-import { TextInput, Button, Group, Box, Textarea } from "@mantine/core";
+import React, { useState } from "react";
+import { TextInput, Button, Group, Box, Textarea, Modal } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { useDisclosure } from "@mantine/hooks";
+
+import { createTicket } from "../../utils/tickets";
 
 //TODO create utils to fire requsets
 //TODO admin should be able to update ticket in id page
@@ -10,12 +13,14 @@ import { useForm } from "@mantine/form";
 //TODO write test for create ticket & validation
 //TODO write test only admin can see ticket list
 const Ticket = () => {
+  const [success, setSuccess] = useState(null);
+  const [messageOpened, isMessageOpenedProps] = useDisclosure(false);
   const form = useForm({
     mode: "uncontrolled",
     initialValues: {
       title: "",
       email: "",
-      author: "",
+      createdBy: "",
       description: "",
     },
 
@@ -23,51 +28,90 @@ const Ticket = () => {
       email: (value) => (/^\S+@\S+$/.test(value) ? null : "Invalid email"),
     },
   });
-
+  console.log("success", success);
   return (
     <div className="mt-5">
       <h1 className="text-lg font-bold">Ticket Page</h1>
+      {success ? (
+        <Modal
+          opened={messageOpened}
+          onClose={() => {
+            isMessageOpenedProps.close();
+            form.reset();
+            setSuccess(null);
+          }}
+          withCloseButton={false}
+          centered
+        >
+          Successfully submitted your ticket. We will handle your request soon.
+        </Modal>
+      ) : success === false ? (
+        <Modal
+          opened={messageOpened}
+          onClose={() => {
+            isMessageOpenedProps.close();
+            setSuccess(null);
+          }}
+          withCloseButton={false}
+          centered
+        >
+          Failed to create your ticket. Please try again.
+        </Modal>
+      ) : (
+        <Box maw={340}>
+          <form
+            onSubmit={form.onSubmit(async (validationErrors, values, event) => {
+              console.log(
+                validationErrors, // <- form.errors at the moment of submit
+                values, // <- form.getValues() at the moment of submit
+                event // <- form element submit event
+              );
+              const result = await createTicket(values);
+              console.log("result in page", result);
+              // if (result.success) form.reset();
+              setSuccess(result.success);
+              isMessageOpenedProps.open();
+            })}
+          >
+            <TextInput
+              withAsterisk
+              label="Title"
+              placeholder="ex: I can't reset my password"
+              key={form.key("title")}
+              {...form.getInputProps("title")}
+            />
 
-      <Box maw={340}>
-        <form onSubmit={form.onSubmit((values) => console.log(values))}>
-          <TextInput
-            withAsterisk
-            label="Title"
-            placeholder="I can't reset my password"
-            key={form.key("title")}
-            {...form.getInputProps("title")}
-          />
+            <TextInput
+              withAsterisk
+              label="Author"
+              placeholder="Your name"
+              key={form.key("createdBy")}
+              {...form.getInputProps("createdBy")}
+            />
 
-          <TextInput
-            withAsterisk
-            label="Author"
-            placeholder="Your name"
-            key={form.key("author")}
-            {...form.getInputProps("author")}
-          />
+            <TextInput
+              withAsterisk
+              label="Email"
+              placeholder="Your email"
+              key={form.key("email")}
+              {...form.getInputProps("email")}
+            />
 
-          <TextInput
-            withAsterisk
-            label="Email"
-            placeholder="Your email"
-            key={form.key("email")}
-            {...form.getInputProps("email")}
-          />
+            <Textarea
+              placeholder="Describe your issue in details"
+              label="Description"
+              autosize
+              minRows={2}
+              key={form.key("description")}
+              {...form.getInputProps("description")}
+            />
 
-          <Textarea
-            placeholder="Describe your issue in details"
-            label="Description"
-            autosize
-            minRows={2}
-            key={form.key("description")}
-            {...form.getInputProps("description")}
-          />
-
-          <Group justify="flex-end" mt="md">
-            <Button type="submit">Submit</Button>
-          </Group>
-        </form>
-      </Box>
+            <Group justify="flex-end" mt="md">
+              <Button type="submit">Submit</Button>
+            </Group>
+          </form>
+        </Box>
+      )}
     </div>
   );
 };

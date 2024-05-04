@@ -43,9 +43,11 @@ router.post("/", async (req, res) => {
       created,
       created_by: createdBy,
     });
+
+    res.status(200).send({ success: true });
   } catch (err) {
     console.log(err);
-    res.status(500).send("Something broke!");
+    res.status(500).send({ success: false });
   }
 });
 
