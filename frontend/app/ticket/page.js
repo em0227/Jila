@@ -28,7 +28,7 @@ const Ticket = () => {
       email: (value) => (/^\S+@\S+$/.test(value) ? null : "Invalid email"),
     },
   });
-  console.log("success", success);
+
   return (
     <div className="mt-5">
       <h1 className="text-lg font-bold">Ticket Page</h1>
@@ -60,15 +60,8 @@ const Ticket = () => {
       ) : (
         <Box maw={340}>
           <form
-            onSubmit={form.onSubmit(async (validationErrors, values, event) => {
-              console.log(
-                validationErrors, // <- form.errors at the moment of submit
-                values, // <- form.getValues() at the moment of submit
-                event // <- form element submit event
-              );
+            onSubmit={form.onSubmit(async (values) => {
               const result = await createTicket(values);
-              console.log("result in page", result);
-              // if (result.success) form.reset();
               setSuccess(result.success);
               isMessageOpenedProps.open();
             })}

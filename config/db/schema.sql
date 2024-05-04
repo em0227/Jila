@@ -8,7 +8,7 @@ DROP TABLE IF EXISTS replies;
 DROP TABLE IF EXISTS tickets;
 
 CREATE TABLE tickets(
-    id INT PRIMARY KEY NOT NULL,
+    id VARCHAR PRIMARY KEY NOT NULL,
     created_by VARCHAR NOT NULL,
     email VARCHAR NOT NULL,
     title VARCHAR NOT NULL,
@@ -23,8 +23,8 @@ INSERT into tickets(id, created_by, email, title, description, status, created)
 VALUES('1', 'emily', 'emily@test.com', 'need reset password', 'forgot password need reset link', 'new', NOW());
 
 CREATE TABLE replies(
-    id INT PRIMARY KEY NOT NULL,
-    ticket_id INT NOT NULL,
+    id VARCHAR PRIMARY KEY NOT NULL,
+    ticket_id VARCHAR NOT NULL,
     response TEXT NOT NULL,
     created_by VARCHAR NOT NULL,
     created TIMESTAMP NOT NULL,

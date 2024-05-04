@@ -33,6 +33,7 @@ router.post("/", async (req, res) => {
   const id = uuidv4();
   const status = "new";
   const { createdBy, email, title, description, created } = req.body;
+
   try {
     await db("tickets").insert({
       id,
@@ -41,7 +42,7 @@ router.post("/", async (req, res) => {
       title,
       description,
       created,
-      created_by: createdBy,
+      ...{ created_by: createdBy },
     });
 
     res.status(200).send({ success: true });
