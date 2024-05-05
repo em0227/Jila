@@ -2,34 +2,25 @@ const express = require("express");
 const router = express.Router();
 const { v4: uuidv4 } = require("uuid");
 const db = require("../database");
-// const { sql } = require("@vercel/postgres");
 
 router.post("/", async (req, res) => {
   const id = uuidv4();
   const { ticketId, response, createdBy, created } = req.body;
 
   try {
-    await db("replies").insert({
-      id,
-      response,
-      created,
-      ...{ ticket_id: ticketId },
-      ...{ created_by: createdBy },
-    });
+    const insertSql =
+      "INSERT INTO replies(id, ticketId, response, created_by, created) VALUES($1, $2, $3, $4, $5)";
 
-    await db("tickets").where({ id: ticketId }).update({
-      updated: created,
-      updated_by: createdBy,
-    });
+    await db.query(insertSql, [id, ticketId, response, createdBy, created]);
 
-    const updatedData = await db("tickets")
-      .join("replies", "tickets.id", "=", "replies.ticket_id")
-      .select(
-        "replies.id",
-        "replies.created",
-        "replies.created_by",
-        "replies.response"
-      );
+    const updateSql =
+      "UPDATE tickets set updated_by = $1, updated = $2 where id = $3";
+
+    await db.query(updateSql, [createdBy, created]);
+
+    const updatedData = await db.query(
+      `SELECT * FROM replies LEFT JOIN tickets ON tickets.id=replies.ticket_id WHERE replies.ticket_id='${ticketId}'`
+    );
 
     res.status(200).send({ replies: updatedData, success: true });
   } catch (err) {

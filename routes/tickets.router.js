@@ -9,8 +9,8 @@ router.get("/test", (req, res) => {
 
 router.get("/", async (req, res, next) => {
   try {
-    const tickets = await db.select().from("tickets");
-    res.send({ success: true, tickets }).status(200);
+    const { rows } = await db.query("select * from tickets");
+    res.send({ success: true, tickets: rows }).status(200);
   } catch (err) {
     console.log(err);
     res.status(500).send({ success: false });
@@ -19,11 +19,18 @@ router.get("/", async (req, res, next) => {
 
 //tickets/2
 router.get("/:id", async (req, res) => {
-  const id = req.params.id;
   try {
     //TODO join the queries?
-    const ticket = await db("tickets").where({ id }).first();
-    const replies = await db("replies").where({ ticket_id: id });
+    const { rows: tickets } = await db.query(
+      "select * from tickets where id= $1",
+      [req.params.id]
+    );
+    const ticket = tickets[0];
+    const { rows: replies } = await await db.query(
+      "select * from replies where ticket_id= $1",
+      [req.params.id]
+    );
+
     res.send({ ticket, replies, success: true }).status(200);
   } catch (err) {
     console.log(err);
@@ -37,15 +44,18 @@ router.post("/", async (req, res) => {
   const { createdBy, email, title, description, created } = req.body;
 
   try {
-    await db("tickets").insert({
+    const sql =
+      "INSERT INTO tickets(id, status, created_by, email, title, description, created) VALUES($1, $2, $3, $4, $5, $6, $7)";
+
+    await db.query(sql, [
       id,
       status,
+      createdBy,
       email,
       title,
       description,
       created,
-      ...{ created_by: createdBy },
-    });
+    ]);
 
     res.status(200).send({ success: true });
   } catch (err) {
@@ -55,15 +65,13 @@ router.post("/", async (req, res) => {
 });
 
 router.put("/:id", async (req, res) => {
-  const id = req.params.id;
   const { status, updatedBy, updated } = req.body;
 
   try {
-    await db("tickets").where({ id }).update({
-      updated,
-      updated_by: updatedBy,
-      status,
-    });
+    const sql =
+      "UPDATE tickets set status = $1, updated_by = $2, updated = $3 where id = $4";
+
+    await db.query(sql, [status, updatedBy, updated, req.params.id]);
 
     res.status(200).send({ success: true });
   } catch (err) {
