@@ -2,11 +2,11 @@
   "name": "jila",
   "version": "1.0.0",
   "description": "a ticketing system",
-  "main": "app.js",
+  "main": "index.js",
   "scripts": {
-    "start": "node app.js",
-    "server": "nodemon app.js",
-    "server:debug": "nodemon --inspect app.js",
+    "start": "node index.js",
+    "server": "nodemon index.js",
+    "server:debug": "nodemon --inspect index.js",
     "frontend-install": "npm install --prefix frontend",
     "frontend": "npm run dev --prefix frontend",
     "dev": "concurrently \"npm run server\" \"npm run frontend\""
