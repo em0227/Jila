@@ -133,7 +133,10 @@ const AdminTicket = ({ params }) => {
           </div>
           <h1 className="text-lg font-bold mt-6">Replies</h1>
           {repliesData.map((reply) => (
-            <div className="border-solid border-2 border-indigo-600 w-2/6 space-y-2">
+            <div
+              key={reply.id}
+              className="border-solid border-2 border-indigo-600 w-2/6 space-y-2"
+            >
               <p>
                 Reply created at: {new Date(reply.created).toLocaleString()}
               </p>
