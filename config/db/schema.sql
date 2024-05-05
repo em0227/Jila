@@ -20,7 +20,7 @@ CREATE TABLE tickets(
 );
 
 INSERT into tickets(id, created_by, email, title, description, status, created) 
-VALUES('1', 'emily', 'emily@test.com', 'need reset password', 'forgot password need reset link', 'new', NOW());
+VALUES('1', 'emily', 'emily@test.com', 'need reset password', 'forgot password need reset link', 'New', NOW());
 
 CREATE TABLE replies(
     id VARCHAR PRIMARY KEY NOT NULL,
@@ -32,4 +32,4 @@ CREATE TABLE replies(
 );
 
 INSERT into replies(id, ticket_id, created_by, response, created) 
-VALUES('1', '1', 'admin', 'solved', NOW())
+VALUES('1', '1', 'Admin', 'solved', NOW())

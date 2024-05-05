@@ -33,7 +33,7 @@ router.get("/:id", async (req, res) => {
 
 router.post("/", async (req, res) => {
   const id = uuidv4();
-  const status = "new";
+  const status = "New";
   const { createdBy, email, title, description, created } = req.body;
 
   try {
@@ -54,18 +54,16 @@ router.post("/", async (req, res) => {
   }
 });
 
-//TODO: should the ticket be updated if an reply was added but nothing changed on the ticket?
-router.patch("/:id", async (req, res) => {
-  const { status, updatedBy, updated, reply } = req.body;
+router.put("/:id", async (req, res) => {
+  const id = req.params.id;
+  const { status, updatedBy, updated } = req.body;
 
   try {
-    await db("tickets").where({ id: ticketId }).update({
+    await db("tickets").where({ id }).update({
       updated,
       updated_by: updatedBy,
       status,
     });
-
-    await db("replies");
 
     res.status(200).send({ success: true });
   } catch (err) {

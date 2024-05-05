@@ -87,6 +87,7 @@ const UserTicket = () => {
             />
 
             <Textarea
+              required
               placeholder="Describe your issue in details"
               label="Description"
               autosize

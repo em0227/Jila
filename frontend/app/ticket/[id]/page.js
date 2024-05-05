@@ -10,14 +10,13 @@ import {
   Text,
   Select,
   Button,
-  Title,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 
 import { updateTicket, getTicket } from "../../../utils/tickets";
+import { createReply } from "@/utils/replies";
 
-//TODO admin should be able to update ticket in id page
 //TODO admin can add replies
 const AdminTicket = ({ params }) => {
   const [status, setStatus] = useState(null);
@@ -26,14 +25,9 @@ const AdminTicket = ({ params }) => {
   const [success, setSuccess] = useState(null);
   const [messageOpened, isMessageOpenedProps] = useDisclosure(false);
 
-  // const router = useRouter();
-
   useEffect(() => {
-    console.log("params", params);
     const getTicketData = async () => {
-      // if (router.query && router.query.id) {
       const data = await getTicket(params.id);
-      // }
       if (data.success) {
         setTicketData(data.ticket);
         setRepliesData(data.replies);
@@ -52,18 +46,30 @@ const AdminTicket = ({ params }) => {
     mode: "uncontrolled",
     initialValues: {
       response: null,
-      replyCreatedBy: null,
+      createdBy: "Admin",
     },
   });
 
-  //ticket data + dropdown to change status
-  //update button display if status different
-  //reply data
-  //create a reply form
+  //TODO: re seend db and don't need to do uppercase for status
+  const handleUpdateStatus = async () => {
+    const result = await updateTicket({
+      status,
+      ticketId: params.id,
+      updatedBy: "Admin",
+    });
 
-  //how to pass down chosen role to be status updatedBy
-  if (!ticketData) return <></>;
-  console.log("status", status);
+    if (!result.success) {
+      setStatus(status.charAt(0).toUpperCase() + status.slice(1));
+    } else {
+      setTicketData({ ...ticketData, status });
+    }
+    setSuccess(result.success);
+    isMessageOpenedProps.open();
+  };
+
+  //TODO: how to pass down chosen role to be status updatedBy
+  if (!ticketData || !repliesData) return <></>;
+
   return (
     <div className="mt-5">
       <h1 className="text-lg font-bold">View Ticket</h1>
@@ -94,8 +100,9 @@ const AdminTicket = ({ params }) => {
         </Modal>
       ) : (
         <Box className="mt-6">
-          <div>
-            <div>
+          <div className="space-y-3">
+            <div className="flex items-center space-x-2">
+              <Text>Ticket Status: </Text>
               <Select
                 placeholder="Ticket Status"
                 data={["In Progress", "New", "Resolved"]}
@@ -104,8 +111,8 @@ const AdminTicket = ({ params }) => {
                 defaultValue={status}
                 className="max-w-fit"
               />
-              {status.toLowerCase() !== ticketData.status ? (
-                <Button>Update</Button>
+              {status !== ticketData.status ? (
+                <Button onClick={handleUpdateStatus}>Update</Button>
               ) : (
                 <></>
               )}
@@ -117,7 +124,9 @@ const AdminTicket = ({ params }) => {
               <Text>Author: {ticketData.created_by}</Text>
             </div>
             <div>
-              <Text>Created on: {ticketData.created}</Text>
+              <Text>
+                Created on: {new Date(ticketData.created).toLocaleString()}
+              </Text>
             </div>
             <div>
               <Text>Description: {ticketData.description}</Text>
@@ -125,8 +134,10 @@ const AdminTicket = ({ params }) => {
           </div>
           <h1 className="text-lg font-bold mt-6">Replies</h1>
           {repliesData.map((reply) => (
-            <div className="border-solid border-2 border-indigo-600 w-2/6">
-              <p>Reply created at: {reply.created}</p>
+            <div className="border-solid border-2 border-indigo-600 w-2/6 space-y-2">
+              <p>
+                Reply created at: {new Date(reply.created).toLocaleString()}
+              </p>
               <p>Replied by: {reply.created_by}</p>
               <p>Response: {reply.response}</p>
             </div>
@@ -134,15 +145,19 @@ const AdminTicket = ({ params }) => {
           <div className="mt-6">Add a Reply</div>
           <form
             onSubmit={ticketUpdates.onSubmit(async (values) => {
-              const result = await updateTicket(values);
+              const result = await createReply({
+                ...values,
+                ticketId: params.id,
+              });
               setSuccess(result.success);
+              setRepliesData(result.replies);
               isMessageOpenedProps.open();
             })}
             className="w-2/6"
           >
             <Textarea
+              required
               placeholder="Write something"
-              label="Reply"
               autosize
               minRows={2}
               key={ticketUpdates.key("response")}

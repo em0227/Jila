@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const tickets = require("./routes/api/tickets");
+const replies = require("./routes/api/replies");
 const cors = require("cors");
 
 const corsOptions = {
@@ -19,6 +20,7 @@ app.get("/test", (req, res) => {
 });
 
 app.use("/api/tickets", tickets);
+app.use("/api/replies", replies);
 
 const port = process.env.PORT || 3001;
 
