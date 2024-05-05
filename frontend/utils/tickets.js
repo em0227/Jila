@@ -56,9 +56,8 @@ export const updateTicket = async (ticket) => {
   const { ticketId, status, updatedBy } = ticket;
   try {
     const result = await axios.put(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/tickets`,
+      `${process.env.NEXT_PUBLIC_API_URL}/api/tickets/${ticketId}`,
       {
-        ticketId,
         status,
         updated,
         updatedBy,

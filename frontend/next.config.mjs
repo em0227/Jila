@@ -2,7 +2,6 @@
 const nextConfig = {
   experimental: {
     appDir: true,
-    optimizePackageImports: ["@mantine/core", "@mantine/hooks"],
   },
 };
 

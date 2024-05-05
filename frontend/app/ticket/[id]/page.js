@@ -1,9 +1,17 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 
-import { Group, Box, Textarea, Modal, Text, Select } from "@mantine/core";
+import {
+  Group,
+  Box,
+  Textarea,
+  Modal,
+  Text,
+  Select,
+  Button,
+  Title,
+} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 
@@ -11,34 +19,34 @@ import { updateTicket, getTicket } from "../../../utils/tickets";
 
 //TODO admin should be able to update ticket in id page
 //TODO admin can add replies
-const AdminTicket = () => {
+const AdminTicket = ({ params }) => {
   const [status, setStatus] = useState(null);
   const [ticketData, setTicketData] = useState(null);
   const [repliesData, setRepliesData] = useState(null);
   const [success, setSuccess] = useState(null);
   const [messageOpened, isMessageOpenedProps] = useDisclosure(false);
 
-  const router = useRouter();
+  // const router = useRouter();
 
   useEffect(() => {
+    console.log("params", params);
     const getTicketData = async () => {
-      if (router && router.query.id) {
-        const data = await getTicket(router.query.id);
-        return data;
+      // if (router.query && router.query.id) {
+      const data = await getTicket(params.id);
+      // }
+      if (data.success) {
+        setTicketData(data.ticket);
+        setRepliesData(data.replies);
+        const status = data.ticket.status;
+        setStatus(status.charAt(0).toUpperCase() + status.slice(1));
+      } else {
+        setSuccess(false);
+        isMessageOpenedProps.open();
       }
     };
 
-    const ticketData = getTicketData();
-
-    if (ticketData.success) {
-      setTicketData(ticketData.ticket);
-      setRepliesData(ticketData.replies);
-      setStatus(ticketData.status);
-    } else {
-      setSuccess(false);
-      isMessageOpenedProps.open();
-    }
-  }, [router.query]);
+    getTicketData();
+  }, [params.id]);
 
   const ticketUpdates = useForm({
     mode: "uncontrolled",
@@ -55,6 +63,7 @@ const AdminTicket = () => {
 
   //how to pass down chosen role to be status updatedBy
   if (!ticketData) return <></>;
+  console.log("status", status);
   return (
     <div className="mt-5">
       <h1 className="text-lg font-bold">View Ticket</h1>
@@ -84,45 +93,52 @@ const AdminTicket = () => {
           Failed to perform your request. Please try again or refresh the page.
         </Modal>
       ) : (
-        <Box maw={340}>
+        <Box className="mt-6">
           <div>
-            <p>
+            <div>
               <Select
                 placeholder="Ticket Status"
                 data={["In Progress", "New", "Resolved"]}
                 value={status}
                 onChange={setStatus}
+                defaultValue={status}
+                className="max-w-fit"
               />
-              {status !== ticketData.status ? <Button>Update</Button> : <></>}
-            </p>
-            <p>
-              <Text>Title</Text>: {ticketData.title}
-            </p>
-            <p>
-              <Text>Author</Text>: {ticketData.createdBy}
-            </p>
-            <p>
-              <Text>Created on</Text>: {ticketData.created}
-            </p>
-            <p>
-              <Text>Description</Text>: {ticketData.description}
-            </p>
-          </div>
-          <Text>Replies</Text>
-          {repliesData.map((reply) => (
+              {status.toLowerCase() !== ticketData.status ? (
+                <Button>Update</Button>
+              ) : (
+                <></>
+              )}
+            </div>
             <div>
-              <p>{reply.created}</p>
-              <p>{reply.created_by}</p>
-              <p>{reply.response}</p>
+              <Text>Title: {ticketData.title}</Text>
+            </div>
+            <div>
+              <Text>Author: {ticketData.created_by}</Text>
+            </div>
+            <div>
+              <Text>Created on: {ticketData.created}</Text>
+            </div>
+            <div>
+              <Text>Description: {ticketData.description}</Text>
+            </div>
+          </div>
+          <h1 className="text-lg font-bold mt-6">Replies</h1>
+          {repliesData.map((reply) => (
+            <div className="border-solid border-2 border-indigo-600 w-2/6">
+              <p>Reply created at: {reply.created}</p>
+              <p>Replied by: {reply.created_by}</p>
+              <p>Response: {reply.response}</p>
             </div>
           ))}
-          <Text>Add a Reply</Text>
+          <div className="mt-6">Add a Reply</div>
           <form
             onSubmit={ticketUpdates.onSubmit(async (values) => {
               const result = await updateTicket(values);
               setSuccess(result.success);
               isMessageOpenedProps.open();
             })}
+            className="w-2/6"
           >
             <Textarea
               placeholder="Write something"

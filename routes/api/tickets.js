@@ -17,10 +17,12 @@ router.get("/all", async (req, res, next) => {
   }
 });
 
+//tickets/2
 router.get("/:id", async (req, res) => {
   const id = req.params.id;
   try {
-    const ticket = await db("tickets").where({ id });
+    //TODO join the queries?
+    const ticket = await db("tickets").where({ id }).first();
     const replies = await db("replies").where({ ticket_id: id });
     res.send({ ticket, replies, success: true }).status(200);
   } catch (err) {
@@ -53,8 +55,8 @@ router.post("/", async (req, res) => {
 });
 
 //TODO: should the ticket be updated if an reply was added but nothing changed on the ticket?
-router.patch("/", async (req, res) => {
-  const { ticketId, status, updatedBy, updated } = req.body;
+router.patch("/:id", async (req, res) => {
+  const { status, updatedBy, updated, reply } = req.body;
 
   try {
     await db("tickets").where({ id: ticketId }).update({
@@ -62,6 +64,8 @@ router.patch("/", async (req, res) => {
       updated_by: updatedBy,
       status,
     });
+
+    await db("replies");
 
     res.status(200).send({ success: true });
   } catch (err) {
