@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { v4: uuidv4 } = require("uuid");
-const db = require("../../config/config");
+const db = require("../database");
 // const { sql } = require("@vercel/postgres");
 
 router.post("/", async (req, res) => {

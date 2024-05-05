@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { v4: uuidv4 } = require("uuid");
-const db = require("../../config/config");
+const db = require("../../database");
 
 router.get("/test", (req, res) => {
   res.send("this is the ticket test route");
