@@ -17,7 +17,6 @@ import { useDisclosure } from "@mantine/hooks";
 import { updateTicket, getTicket } from "../../../utils/tickets";
 import { createReply } from "@/utils/replies";
 
-//TODO admin can add replies
 const AdminTicket = ({ params }) => {
   const [status, setStatus] = useState(null);
   const [ticketData, setTicketData] = useState(null);
@@ -68,11 +67,11 @@ const AdminTicket = ({ params }) => {
   };
 
   //TODO: how to pass down chosen role to be status updatedBy
-  if (!ticketData || !repliesData) return <></>;
+  if (!ticketData || !repliesData) return <>Loading ticket data</>;
 
   return (
     <div className="mt-5">
-      <h1 className="text-lg font-bold">View Ticket</h1>
+      <h1 className="text-lg font-bold">Ticket Details</h1>
       {success ? (
         <Modal
           opened={messageOpened}

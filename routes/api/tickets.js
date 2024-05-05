@@ -7,10 +7,10 @@ router.get("/test", (req, res) => {
   res.send("this is the ticket test route");
 });
 
-router.get("/all", async (req, res, next) => {
+router.get("/", async (req, res, next) => {
   try {
-    const data = await db.select().from("tickets");
-    res.send({ success: true, data }).status(200);
+    const tickets = await db.select().from("tickets");
+    res.send({ success: true, tickets }).status(200);
   } catch (err) {
     console.log(err);
     res.status(500).send({ success: false });

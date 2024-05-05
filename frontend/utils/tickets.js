@@ -17,7 +17,7 @@ export const getTicket = async (id) => {
 export const getAllTickets = async () => {
   try {
     const result = await axios.get(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/tickets/all`
+      `${process.env.NEXT_PUBLIC_API_URL}/api/tickets`
     );
     return result.data;
   } catch (err) {
