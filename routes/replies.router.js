@@ -18,7 +18,7 @@ router.post("/", async (req, res) => {
 
     await db.query(updateSql, [createdBy, created, ticketId]);
 
-    const updatedData = await db.query(
+    const { rows: updatedData } = await db.query(
       `SELECT * FROM replies LEFT JOIN tickets ON tickets.id=replies.ticket_id WHERE replies.ticket_id='${ticketId}'`
     );
 
