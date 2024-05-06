@@ -2,6 +2,11 @@ const express = require("express");
 const router = express.Router();
 const { v4: uuidv4 } = require("uuid");
 const db = require("../database");
+const {
+  validateStatus,
+  validateEmail,
+  validateDate,
+} = require("../utils/validations");
 
 router.get("/test", (req, res) => {
   res.send("this is the ticket test route");
@@ -41,6 +46,17 @@ router.post("/", async (req, res) => {
   const status = "New";
   const { createdBy, email, title, description, created } = req.body;
 
+  const validated =
+    validateEmail(email) &&
+    title.length > 0 &&
+    createdBy.length > 0 &&
+    validateDate(created);
+
+  if (!validated) {
+    res.status(400).send({ success: false });
+    return;
+  }
+
   try {
     const sql =
       "INSERT INTO tickets(id, status, created_by, email, title, description, created) VALUES($1, $2, $3, $4, $5, $6, $7)";
@@ -64,6 +80,14 @@ router.post("/", async (req, res) => {
 
 router.put("/:id", async (req, res) => {
   const { status, updatedBy, updated } = req.body;
+
+  const validated =
+    validateStatus(status) && validateDate(updated) && updatedBy === "Admin";
+
+  if (!validated) {
+    res.status(400).send({ success: false });
+    return;
+  }
 
   try {
     const sql =
