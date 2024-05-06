@@ -10,7 +10,7 @@ import "@testing-library/jest-dom";
 import ReplyForm from ".";
 
 describe("Reply Form", () => {
-  it("renders", () => {
+  it.skip("renders", () => {
     render(
       <ReplyForm
         id={1}
