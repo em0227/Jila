@@ -2,20 +2,12 @@
 
 import React, { useEffect, useState } from "react";
 
-import {
-  Group,
-  Box,
-  Textarea,
-  Modal,
-  Text,
-  Select,
-  Button,
-} from "@mantine/core";
-import { useForm } from "@mantine/form";
+import { Box, Modal, Text, Select, Button } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 
+import ReplyForm from "@/app/components/replyForm";
+
 import { updateTicket, getTicket } from "../../../utils/tickets";
-import { createReply } from "@/utils/replies";
 
 const AdminTicket = ({ params }) => {
   const [status, setStatus] = useState(null);
@@ -41,14 +33,6 @@ const AdminTicket = ({ params }) => {
     getTicketData();
   }, [params.id]);
 
-  const ticketUpdates = useForm({
-    mode: "uncontrolled",
-    initialValues: {
-      response: null,
-      createdBy: "Admin",
-    },
-  });
-
   const handleUpdateStatus = async () => {
     const result = await updateTicket({
       status,
@@ -63,6 +47,9 @@ const AdminTicket = ({ params }) => {
     }
     setSuccess(result.success);
     isMessageOpenedProps.open();
+    console.log(
+      `Would normally send email here with body: Your ticket status is updated to ${status}`
+    );
   };
 
   //TODO: how to pass down chosen role to be status updatedBy
@@ -76,7 +63,6 @@ const AdminTicket = ({ params }) => {
           opened={messageOpened}
           onClose={() => {
             isMessageOpenedProps.close();
-            ticketUpdates.reset();
             setSuccess(null);
           }}
           withCloseButton={false}
@@ -144,31 +130,12 @@ const AdminTicket = ({ params }) => {
             </div>
           ))}
           <div className="mt-6">Add a Reply</div>
-          <form
-            onSubmit={ticketUpdates.onSubmit(async (values) => {
-              const result = await createReply({
-                ...values,
-                ticketId: params.id,
-              });
-              setSuccess(result.success);
-              setRepliesData(result.replies);
-              isMessageOpenedProps.open();
-            })}
-            className="w-2/6"
-          >
-            <Textarea
-              required
-              placeholder="Write something"
-              autosize
-              minRows={2}
-              key={ticketUpdates.key("response")}
-              {...ticketUpdates.getInputProps("response")}
-            />
-
-            <Group justify="flex-end" mt="md">
-              <Button type="submit">Submit</Button>
-            </Group>
-          </form>
+          <ReplyForm
+            id={params.id}
+            setRepliesData={setRepliesData}
+            isMessageOpenedProps={isMessageOpenedProps}
+            setSuccess={setSuccess}
+          />
         </Box>
       )}
     </div>
