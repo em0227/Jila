@@ -6,7 +6,7 @@ const replies = require("./routes/replies.router");
 const cors = require("cors");
 
 const corsOptions = {
-  origin: "*",
+  origin: `${process.env.NEXT_PUBLIC_FE_URL}`,
   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 
