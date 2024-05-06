@@ -9,7 +9,8 @@
     "server:debug": "nodemon --inspect index.js",
     "frontend-install": "npm install --prefix frontend",
     "frontend": "npm run dev --prefix frontend",
-    "dev": "concurrently \"npm run server\" \"npm run frontend\""
+    "dev": "concurrently \"npm run server\" \"npm run frontend\"",
+    "test": "jest"
   },
   "author": "emilywu",
   "license": "ISC",
@@ -26,6 +27,7 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
+    "jest": "^29.7.0",
     "nodemon": "^2.0.15"
   }
 }

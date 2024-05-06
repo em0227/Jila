@@ -1,7 +1,7 @@
 "use strict";
 
 const validateEmail = (email) => {
-  return /^\S+@\S+$/.test(email);
+  return /^\S+@\S+\.\S+$/.test(email);
 };
 
 const validStatus = ["In Progress", "New", "Resolved"];
