@@ -17,10 +17,8 @@ router.get("/", async (req, res, next) => {
   }
 });
 
-//tickets/2
 router.get("/:id", async (req, res) => {
   try {
-    //TODO join the queries?
     const { rows: tickets } = await db.query(
       "select * from tickets where id= $1",
       [req.params.id]

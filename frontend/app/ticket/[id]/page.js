@@ -49,7 +49,6 @@ const AdminTicket = ({ params }) => {
     },
   });
 
-  //TODO: re seend db and don't need to do uppercase for status
   const handleUpdateStatus = async () => {
     const result = await updateTicket({
       status,
