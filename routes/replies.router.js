@@ -9,7 +9,7 @@ router.post("/", async (req, res) => {
 
   try {
     const insertSql =
-      "INSERT INTO replies(id, ticketId, response, created_by, created) VALUES($1, $2, $3, $4, $5)";
+      "INSERT INTO replies(id, ticket_id, response, created_by, created) VALUES($1, $2, $3, $4, $5)";
 
     await db.query(insertSql, [id, ticketId, response, createdBy, created]);
 
