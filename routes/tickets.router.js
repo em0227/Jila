@@ -14,8 +14,9 @@ router.get("/test", (req, res) => {
 
 router.get("/", async (req, res, next) => {
   try {
-    const { rows } = await db.query("select * from tickets");
-    res.send({ success: true, tickets: rows }).status(200);
+    // const { rows } = await db.query("select * from tickets");
+    const data = await db.select().table("tickets");
+    res.send({ success: true, tickets: data }).status(200);
   } catch (err) {
     console.log(err);
     res.status(500).send({ success: false });
@@ -23,18 +24,21 @@ router.get("/", async (req, res, next) => {
 });
 
 router.get("/:id", async (req, res) => {
+  const id = req.params.id;
   try {
-    const { rows: tickets } = await db.query(
-      "select * from tickets where id= $1",
-      [req.params.id]
-    );
-    const ticket = tickets[0];
-    const { rows: replies } = await await db.query(
-      "select * from replies where ticket_id= $1",
-      [req.params.id]
-    );
+    // const { rows: tickets } = await db.query(
+    //   "select * from tickets where id= $1",
+    //   [req.params.id]
+    // );
+    // const ticket = tickets[0];
+    // const { rows: replies } = await await db.query(
+    //   "select * from replies where ticket_id= $1",
+    //   [req.params.id]
+    // );
+    const ticket = await db("tickets").where({ id });
+    const replies = await db("replies").where({ ticket_id: id });
 
-    res.send({ ticket, replies, success: true }).status(200);
+    res.send({ ticket: ticket[0], replies, success: true }).status(200);
   } catch (err) {
     console.log(err);
     res.status(500).send({ success: false });
@@ -58,18 +62,27 @@ router.post("/", async (req, res) => {
   }
 
   try {
-    const sql =
-      "INSERT INTO tickets(id, status, created_by, email, title, description, created) VALUES($1, $2, $3, $4, $5, $6, $7)";
+    // const sql =
+    //   "INSERT INTO tickets(id, status, created_by, email, title, description, created) VALUES($1, $2, $3, $4, $5, $6, $7)";
 
-    await db.query(sql, [
+    // await db.query(sql, [
+    //   id,
+    //   status,
+    //   createdBy,
+    //   email,
+    //   title,
+    //   description,
+    //   created,
+    // ]);
+    await db("tickets").insert({
       id,
       status,
-      createdBy,
       email,
       title,
       description,
       created,
-    ]);
+      created_by: createdBy,
+    });
 
     res.status(200).send({ success: true });
   } catch (err) {
@@ -79,6 +92,7 @@ router.post("/", async (req, res) => {
 });
 
 router.put("/:id", async (req, res) => {
+  const id = req.params.id;
   const { status, updatedBy, updated } = req.body;
 
   const validated =
@@ -90,10 +104,17 @@ router.put("/:id", async (req, res) => {
   }
 
   try {
-    const sql =
-      "UPDATE tickets set status = $1, updated_by = $2, updated = $3 where id = $4";
+    // const sql =
+    //   "UPDATE tickets set status = $1, updated_by = $2, updated = $3 where id = $4";
 
-    await db.query(sql, [status, updatedBy, updated, req.params.id]);
+    // await db.query(sql, [status, updatedBy, updated, req.params.id]);
+    await db("tickets")
+      .where({ id })
+      .update({
+        updated,
+        updated_by: updatedBy,
+        ...(status ? { status } : {}),
+      });
 
     res.status(200).send({ success: true });
   } catch (err) {

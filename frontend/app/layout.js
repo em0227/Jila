@@ -3,7 +3,7 @@ import "./globals.css";
 
 import "@mantine/core/styles.css";
 import { MantineProvider } from "@mantine/core";
-import NavBar from "./components/NavBar";
+import NavBar from "./components/navBar";
 
 //TODO write test only admin can see ticket list
 export default function RootLayout({ children }) {

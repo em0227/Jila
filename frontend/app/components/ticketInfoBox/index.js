@@ -11,9 +11,16 @@ const TicketInfoBox = ({
   setTicketData,
   isMessageOpenedProps,
 }) => {
-  const [status, setStatus] = useState(
-    ticketData.status.charAt(0).toUpperCase() + ticketData.status.slice(1)
-  );
+  const [status, setStatus] = useState(null);
+
+  useEffect(() => {
+    if (ticketData) {
+      console.log("ticketdat", ticketData, ticketData.status);
+      const status =
+        ticketData.status.charAt(0).toUpperCase() + ticketData.status.slice(1);
+      setStatus(status);
+    }
+  }, [ticketData]);
 
   const handleUpdateStatus = async () => {
     const result = await updateTicket({
@@ -34,6 +41,7 @@ const TicketInfoBox = ({
     );
   };
 
+  if (!ticketData) return <></>;
   return (
     <div className="space-y-3">
       <div className="flex items-center space-x-2">

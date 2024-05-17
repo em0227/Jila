@@ -17,19 +17,41 @@ router.post("/", async (req, res) => {
   }
 
   try {
-    const insertSql =
-      "INSERT INTO replies(id, ticket_id, response, created_by, created) VALUES($1, $2, $3, $4, $5)";
+    // const insertSql =
+    //   "INSERT INTO replies(id, ticket_id, response, created_by, created) VALUES($1, $2, $3, $4, $5)";
 
-    await db.query(insertSql, [id, ticketId, response, createdBy, created]);
+    // await db.query(insertSql, [id, ticketId, response, createdBy, created]);
 
-    const updateSql =
-      "UPDATE tickets set updated_by = $1, updated = $2 where id = $3";
+    // const updateSql =
+    //   "UPDATE tickets set updated_by = $1, updated = $2 where id = $3";
 
-    await db.query(updateSql, [createdBy, created, ticketId]);
+    // await db.query(updateSql, [createdBy, created, ticketId]);
 
-    const { rows: updatedData } = await db.query(
-      `SELECT re.response, re.ticket_id, re.id, re.created, re.created_by FROM replies AS re LEFT JOIN tickets ON tickets.id=re.ticket_id WHERE re.ticket_id='${ticketId}'`
-    );
+    // const { rows: updatedData } = await db.query(
+    //   `SELECT re.response, re.ticket_id, re.id, re.created, re.created_by FROM replies AS re LEFT JOIN tickets ON tickets.id=re.ticket_id WHERE re.ticket_id='${ticketId}'`
+    // );
+    await db("replies").insert({
+      id,
+      response,
+      created,
+      ...{ ticket_id: ticketId },
+      ...{ created_by: createdBy },
+    });
+
+    await db("tickets").where({ id: ticketId }).update({
+      updated: created,
+      updated_by: createdBy,
+    });
+
+    const updatedData = await db("tickets")
+      .where({ "tickets.id": ticketId })
+      .join("replies", "tickets.id", "=", "replies.ticket_id")
+      .select(
+        "replies.id",
+        "replies.created",
+        "replies.created_by",
+        "replies.response"
+      );
 
     res.status(200).send({ replies: updatedData, success: true });
   } catch (err) {
