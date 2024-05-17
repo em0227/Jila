@@ -13,7 +13,7 @@ export default function RootLayout({ children }) {
   const [role, setRole] = useState("User");
   return (
     <html lang="en">
-      <body className="container mx-auto">
+      <body className="container lg:mx-auto mx-7">
         <MantineProvider
           withGlobalStyles
           withNormalizeCSS
@@ -23,7 +23,7 @@ export default function RootLayout({ children }) {
             headings: { fontFamily: "Greycliff CF, sans-serif" },
           }}
         >
-          <div className="flex space-x-10">
+          <div className="items-start justify-start lg:flex mt-5 lg:space-x-10">
             <div className="flex">
               <p className="mr-3 pt-2">Pick a Role</p>
               <Select
@@ -34,11 +34,15 @@ export default function RootLayout({ children }) {
               />
             </div>
             <Link href={"/ticket"}>
-              <Button variant="filled">Create a Ticket</Button>
+              <Button variant="filled" className="mt-2 lg:mt-0">
+                Create a Ticket
+              </Button>
             </Link>
             {role === "Admin" && (
               <Link href={"/tickets"}>
-                <Button variant="filled">Check Current Ticket List now</Button>
+                <Button variant="filled" className="mt-2 md:mt-0">
+                  Check Current Ticket List now
+                </Button>
               </Link>
             )}
           </div>
