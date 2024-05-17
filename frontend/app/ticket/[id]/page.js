@@ -76,7 +76,7 @@ const AdminTicket = ({ params }) => {
         {repliesData.map((reply) => (
           <div
             key={reply.id}
-            className="border-solid border-2 border-lightGray w-2/6 space-y-2 px-2 rounded-md my-2"
+            className="border-solid border-2 border-lightGray lg:w-2/6 space-y-2 px-2 rounded-md my-2"
           >
             <p>Reply created at: {new Date(reply.created).toLocaleString()}</p>
             <p>Replied by: {reply.created_by}</p>
